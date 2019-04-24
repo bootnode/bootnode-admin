@@ -1,0 +1,148 @@
+.input.input.input.input.input:not(button)
+  padding: .5em 1em
+  margin: 0
+  background-color: transparent
+
+  input
+  textarea
+    border: 0
+    color: $white
+    background-color: transparent
+    resize: none
+
+    &:-moz-placeholder
+      color: $placeholderColor
+
+    &::-moz-placeholder
+      color: $placeholderColor
+
+    &:-ms-input-placeholder
+      color: $placeholderColor
+
+    &::-webkit-input-placeholder
+      color: $placeholderColor
+
+    &::placeholder
+      color: $placeholderColor
+
+  select
+    color: $white
+    border-bottom: 0
+
+    & ~ .select-indicator
+      color: $white
+      top: 50%
+      right: 1rem
+
+  &.required
+    .input-container
+      &:after
+        content: ''
+        position: absolute
+        left: 0
+        top: 0
+        width: 1px
+        height: 100%
+        background-color: $goodColor
+        transition: background-color ($transitionTime) ease-in-out
+
+      &:not(.valid):after
+        background-color: $errorColor
+
+  .error
+    right: 1rem
+    top: 50%
+    transform: translateY(-50%)
+    margin-top: 0
+    position: absolute
+    text-align: right
+    display: block
+    width: auto
+
+  .mini
+    position: absolute
+    right: 1rem
+    bottom: .5rem
+    display: block
+    width: auto
+
+  .currency-code:after
+    content: 'NAV'
+    font-size: 2.5rem
+    display: block
+    position: absolute
+    right: 1rem
+    top: 50%
+    transform: translateY(-50%)
+    color: $white
+
+.error
+  color: $errorColor !important
+
+.button-group
+  display: flex
+  flex-direction: row
+
+  .button
+    border-radius: 0 !important
+
+    & + .button
+      border-left-color: transparent !important
+
+    &:first-child
+      border-top-left-radius: 2px !important
+      border-bottom-left-radius: 2px !important
+
+    &:last-child
+      border-top-right-radius: 2px !important
+      border-bottom-right-radius: 2px !important
+
+.form
+  button
+    width: 100%
+
+.list-picker-wrapper.list-picker-wrapper.list-picker-wrapper
+  text-align: center
+
+.control
+  & > *
+    width: 100%
+
+.checkbox.checkbox.checkbox
+  display: flex
+  justify-content: flex-start
+  align-items: center
+
+.form
+  .button
+    text-align: center
+
+  .form-group.form-group.form-group
+    align-items: flex-start
+
+    .control
+      margin-bottom: 1rem
+
+  .form-content.form-content.form-content
+    padding-bottom: .5rem
+
+  +tablet()
+    .columns
+      flex-direction: column !important
+
+      & > *
+        flex: 1
+        width: 100%
+        margin-left: 0
+        margin-right: 0
+
+  .photos
+    text-align: center
+
+.webcam-capture
+  text-align: center
+  margin-top: 1rem
+
+  img
+    border-radius: 2px
+
