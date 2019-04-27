@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
+import Divider from '@material-ui/core/Divider'
 import { MuiText } from 'react-referential-forms'
 
 import { withStyles } from '@material-ui/core/styles'
@@ -50,6 +51,9 @@ class NodeCard extends React.Component {
             label='Ports'
             variant='outlined'
           )
+          .host
+            | Hosted by Google
+          Divider
         CardActions
           Button(size='small' color='primary' onClick=onDelete(data.id))
             | Delete
