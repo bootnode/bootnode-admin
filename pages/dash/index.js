@@ -1,28 +1,22 @@
 import React from 'react'
 import Router from 'next/router'
 import LoggedInPage from '../../components/pages/logged-in'
-import MUIServerTable, { ColumnData } from '../../components/tables/mui-server-table'
+import NodeCard from '../../components/node-card'
+import Divider from '@material-ui/core/Divider'
+import Fab from '@material-ui/core/Fab'
+import Add from '@material-ui/icons/Add'
 
-import Api from '../../src/hanzo/api'
-import { HANZO_KEY, HANZO_ENDPOINT } from '../../src/settings.js'
+import BootNode from '../../src/bootnode/client'
+// import { HANZO_KEY, HANZO_ENDPOINT } from '../../src/settings.js'
 import { renderUIDate } from '../../src/util/date.js'
 
 import Emitter from '../../src/emitter'
 import capitalize from '../../src/string/capitalize'
+import { withStyles } from '@material-ui/core/styles'
 import { watch } from '../../src/referential/provider'
 import { startLoading, stopLoading } from '../../components/app/loader'
 
-let columns = [
-  new ColumnData('Created On', 'createdAt', null, null, renderUIDate),
-  new ColumnData('Email', 'email'),
-  new ColumnData('First Name', 'firstName'),
-  new ColumnData('Last Name', 'lastName'),
-  new ColumnData('Flagged', 'kyc.flagged', 'KYCFlagged', null, v => capitalize('' + !!v)),
-  new ColumnData('Frozen', 'kyc.frozen', 'KYCFrozen', null, v => capitalize('' + !!v)),
-  new ColumnData('Status', 'kyc.status', 'KYCStatus', null, v => capitalize(v)),
-]
-
-@watch('usersPage')
+@watch('nodesPage')
 class Index extends LoggedInPage {
   constructor(props) {
     super(props)
@@ -45,29 +39,41 @@ class Index extends LoggedInPage {
     }
   }
 
-  componentDidMount() {
-    startLoading('Loading Users')
+  async componentDidMount() {
+    startLoading(' ')
 
-    this.loadTable().then(() => {
-      stopLoading()
-    }).catch(()=>{
-      stopLoading()
-    })
+    try {
+      await this.loadTable()
+    } catch (e) {
+
+    }
+
+    stopLoading()
+
+    let fn = async () => {
+      await this.loadTable()
+
+      this.timeoutId = setTimeout(fn, 10000)
+    }
+
+    this.timeoutId = setTimeout(fn, 10000)
   }
 
-  loadTable() {
-    let api = new Api( HANZO_KEY, HANZO_ENDPOINT )
+  componentWillUnmount() {
+    clearTimeout(this.timeoutId)
+  }
 
-    let opts = this.props.data.get('search')
+  async loadTable() {
+    let api = new BootNode()
 
-    return api.client.user.list(opts).then((res) => {
-      let page = parseInt(res.page, 10)
-      let display = parseInt(res.display, 10)
+    // let opts = this.props.data.get('search')
+    //
 
-      this.setState({
-        rows: res.models,
-        count: res.count,
-      })
+    let res = await api.request('GET', 'nodes')
+
+    this.setState({
+      rows: res.data,
+      count: res.data.length,
     })
   }
 
@@ -80,37 +86,87 @@ class Index extends LoggedInPage {
   onRowClick = (i) => {
     if (this.state.rows[i]) {
       let id = this.state.rows[i].id
-      Router.push(`/dash/user?id=${id}`)
+      // Router.push(`/dash/user?id=${id}`)
+    }
+  }
+
+  newNode = async () => {
+    startLoading(' ')
+    try {
+      let api = new BootNode()
+      await api.request('PUT', 'nodes')
+
+      await this.loadTable()
+    } catch (e) {
+
+    }
+    stopLoading(' ')
+  }
+
+  deleteNode = (id) => {
+    return async () => {
+      startLoading(' ')
+      try {
+        let api = new BootNode()
+        await api.request('DELETE', 'nodes/' + id)
+
+        await this.loadTable()
+      } catch (e) {
+      }
+      stopLoading(' ')
     }
   }
 
   render() {
+    let { classes } = this.props
+
     let {
       rows,
       count,
     } = this.state
 
-    let opts = {
-      count: count,
-      page: this.props.data.get('search.page') || 1,
-      rowsPerPage: this.props.data.get('search.display') || 10,
-      serverSide: true,
+    let nodeCardsJSX = []
+
+    for (let k in rows) {
+      let data = rows[k]
+
+      nodeCardsJSX.push(pug`
+        NodeCard.node-card(
+          key=k
+          data=data
+          onDelete=this.deleteNode
+        )
+      `)
     }
 
     return pug`
-      main#dash.dash
-        .content.columns
-          MUIServerTable(
-            title='Users'
-            searchText=this.props.data.get('search.q')
-            columns=columns
-            rows=rows
-            options=opts
-            onTableChange=this.onTableChange
-            onRowClick=this.onRowClick
-          )
+      main#nodes.dash
+        .content
+          .buttons
+            Fab(
+              variant='extended'
+              color='primary'
+              onClick=this.newNode
+            )
+              Add(className=classes.extendedIcon)
+              | New Node
+          Divider
+        .content.node-cards
+          =nodeCardsJSX
+
     `
   }
 }
 
-export default Index
+const styles = (theme) => {
+  return {
+    fab: {
+      margin: theme.spacing.unit,
+    },
+    extendedIcon: {
+      marginRight: theme.spacing.unit,
+    },
+  }
+}
+
+export default withStyles(styles)(Index)

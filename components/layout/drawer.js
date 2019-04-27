@@ -42,35 +42,7 @@ class MyDrawer extends React.Component {
                   GroupIcon
               ListItemText
                 Link(href='/dash' color='textPrimary' underline='none')
-                  | Users
-            ListItem
-              ListItemIcon(className=classes.noMargin)
-                Link.columns(href='/dash/transactions' color='textPrimary' underline='none')
-                  SendIcon(className=classes.rotated)
-              ListItemText
-                Link(href='/dash/transactions' color='textPrimary' underline='none')
-                  | Transactions
-            ListItem
-              ListItemIcon(className=classes.noMargin)
-                Link.columns(href='/dash/disclosures' color='textPrimary' underline='none')
-                  LibraryBooksIcon
-              ListItemText
-                Link(href='/dash/disclosures' color='textPrimary' underline='none')
-                  | Disclosures
-            ListItem
-              ListItemIcon(className=classes.noMargin)
-                Link.columns(href='/dash/admin' color='textPrimary' underline='none')
-                  PowerSettingsIcon
-              ListItemText
-                Link(href='/dash/admin' color='textPrimary' underline='none')
-                  | Admin
-            ListItem
-              ListItemIcon(className=classes.noMargin)
-                Link.columns(href='/dash/fund' color='textPrimary' underline='none')
-                  AttachMoneyIcon
-              ListItemText
-                Link(href='/dash/fund' color='textPrimary' underline='none')
-                  | Fund
+                  | Nodes
     `
   }
 }

@@ -22,38 +22,7 @@ class Footer extends React.Component {
 
     let accountLoaded = !!this.props.rootData.get('account.id') && identity
 
-    return pug`
-        if accountLoaded
-          footer
-            Toolbar(className=classes.noPadding)
-              div(className=classes.flex1)
-                Link(
-                  className=classes.blockLink
-                  href='/account/deposit'
-                  color= Router.route == '/account/deposit' ? 'secondary' : 'textPrimary'
-                  underline='none'
-                )
-                  ArrowUpward
-                  .command Purchase
-              div(className=classes.flex1)
-                Link(
-                  className=classes.blockLink
-                  href='/account/send'
-                  color= Router.route == '/account/send' ? 'secondary' : 'textPrimary'
-                  underline='none'
-                )
-                  Send(className=classes.rotated)
-                  .command Send
-              div(className=classes.flex1)
-                Link(
-                  className=classes.blockLink
-                  href='/account/redeem'
-                  color= Router.route == '/account/redeem' ? 'secondary' : 'textPrimary'
-                  underline='none'
-                )
-                  ArrowDownward
-                  .command Redeem
-    `
+    return pug`div`
   }
 }
 

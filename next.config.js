@@ -6,6 +6,7 @@ const postcss      = require('poststylus')
 const autoprefixer = require('autoprefixer')
 const comments     = require('postcss-discard-comments')
 const rupture      = require('rupture')
+const path         = require('path')
 
 module.exports = withCSS(withStylus({
   stylusLoaderOptions: {
@@ -27,23 +28,17 @@ module.exports = withCSS(withStylus({
     config.plugins.push(
       wbf
     )
+
+    if (!config.module.rules) {
+      config.module.rules = []
+    }
+
+    config.module.rules.push({
+      test: /\.mjs$/,
+      type: 'javascript/auto',
+    })
+
     return config
   }
 }))
 
-// module.exports = withCss({
-//   webpack(config, options) {
-//     const { dev } = options
-//     config.plugins = config.plugins.filter(plugin => {
-//       return plugin.constructor.name !== 'UglifyJsPlugin';
-//     });
-
-//     if (!dev) {
-//       // add Babili plugin
-//       config.plugins.push(
-//         new BabiliPlugin()
-//       );
-//     }
-//     return config
-//   }
-// });

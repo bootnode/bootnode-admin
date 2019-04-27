@@ -9,8 +9,8 @@ import Footer from '../components/layout/footer'
 import Loader, { startLoading, stopLoading } from '../components/app/loader'
 
 import MomentUtils from '@date-io/moment'
-import Api from '../src/hanzo/api'
-import { HANZO_KEY, HANZO_ENDPOINT } from '../src/settings.js'
+// import Api from '../src/hanzo/api'
+// import { HANZO_KEY, HANZO_ENDPOINT } from '../src/settings.js'
 
 import blue from '@material-ui/core/colors/blue'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
@@ -20,16 +20,16 @@ import '../styles.styl'
 
 const theme = createMuiTheme({
   palette: {
-    type: 'dark',
+    type: 'light',
     primary: {
       main: blue[500],
     },
     secondary: {
       main: 'rgba(29,226,160,0.7)',
     },
-    background: {
-      paper: '#272B3F',
-    },
+    // background: {
+    //   paper: '#272B3F',
+    // },
   },
 })
 

@@ -1,10 +1,10 @@
 .app-loader
-  background-color: $dashMenuDarkColor
-  color: $white
+  background-color: $white
+  color: $black
 
   &.loading
     position:fixed
-    top: 0
+    top: 16px
     left: 0
     width: 100vw
     height: 100vh
@@ -21,3 +21,88 @@
 
   &.unloading
     opacity: 0
+
+.ball-grid-pulse div
+  width: 16px
+  height: 16px
+  position: absolute
+  top:  calc(50% - 64px)
+  left: calc(50% - 16px / 2)
+
+.ball-grid-pulse div:after
+  content:''
+  display:block
+  background: $blue200
+  width: inherit
+  height: inherit
+  border-radius:50%
+
+.ball-grid-pulse div:nth-child(1)
+  transform:translate(-20px ,  -20px)
+
+.ball-grid-pulse div:nth-child(2)
+  transform:translate(0 ,  -20px)
+
+.ball-grid-pulse div:nth-child(3)
+  transform:translate(20px ,  -20px)
+
+.ball-grid-pulse div:nth-child(4)
+  transform:translate(-20px ,  0)
+
+.ball-grid-pulse div:nth-child(6)
+  transform:translate(20px ,  0)
+
+.ball-grid-pulse div:nth-child(7)
+  transform:translate(-20px ,  20px)
+
+.ball-grid-pulse div:nth-child(8)
+  transform:translate(0 ,  20px)
+
+.ball-grid-pulse div:nth-child(9)
+  transform:translate(20px ,  20px)
+
+
+.ball-grid-pulse div:after
+  animation:ball-grid-pulse  infinite linear
+
+.ball-grid-pulse div:nth-child(1):after
+  animation-delay: -.06s
+  animation-duration: .72s
+
+.ball-grid-pulse div:nth-child(2):after
+  animation-delay: .25s
+  animation-duration: 1.02s
+
+.ball-grid-pulse div:nth-child(3):after
+  animation-delay: .17s
+  animation-duration: 1.28s
+
+.ball-grid-pulse div:nth-child(4):after
+  animation-delay: .48s
+  animation-duration: 1.42s
+
+.ball-grid-pulse div:nth-child(5):after
+  animation-delay: .31s
+  animation-duration: 1.45s
+
+.ball-grid-pulse div:nth-child(6):after
+  animation-delay: .03s
+  animation-duration: 1.18s
+
+.ball-grid-pulse div:nth-child(7):after
+  animation-delay: .46
+  animation-duration: .87s
+
+.ball-grid-pulse div:nth-child(8):after
+  animation-delay: .78s
+  animation-duration: 1.45s
+
+.ball-grid-pulse div:nth-child(9):after
+  animation-delay: .45s
+  animation-duration: 1.06s
+
+@keyframes ball-grid-pulse
+  50%
+    transform:scale(.5)
+    opacity:.4
+
