@@ -132,7 +132,7 @@ class Index extends LoggedInPage {
 
       nodeCardsJSX.push(pug`
         NodeCard.node-card(
-          key=k
+          key=data.id
           data=data
           onDelete=this.deleteNode
         )
