@@ -3,9 +3,13 @@ import Router from 'next/router'
 import LoggedInPage from '../../components/pages/logged-in'
 import NodeCard from '../../components/node-card'
 import Donut from '../../components/d3/donut'
+import Map from '../../components/d3/map'
 import Divider from '@material-ui/core/Divider'
 import Fab from '@material-ui/core/Fab'
 import Add from '@material-ui/icons/Add'
+import Card from '@material-ui/core/Card'
+import CardHeader from '@material-ui/core/CardHeader'
+import CardContent from '@material-ui/core/CardContent'
 
 import BootNode from '../../src/bootnode/client'
 // import { HANZO_KEY, HANZO_ENDPOINT } from '../../src/settings.js'
@@ -41,7 +45,12 @@ class Index extends LoggedInPage {
 
     this.data = [
       { label:'Google', value: 40 },
-      { label:'Hanzo Private Cloud', value: 60 },
+      { label:'Private Cloud', value: 60 },
+    ]
+
+    this.data2 = [
+      { label:'Running', value: 6 },
+      { label:'Pending', value: 1 },
     ]
   }
 
@@ -148,8 +157,39 @@ class Index extends LoggedInPage {
     return pug`
       main#nodes.dash
         .content
-          .charts
-            Donut(data=this.data)
+          .charts.columns
+            Card(className=classes.flex2)
+              CardHeader(
+                title='Zones'
+                subheader='Present in 6 Zones'
+              )
+              CardContent
+                Map(
+                  width=600
+                  height=300
+                )
+            Card
+              CardHeader(
+                title='Decentralization'
+                subheader='40% Decentralized'
+              )
+              CardContent
+                Donut(
+                  data=this.data
+                  width=300
+                  height=300
+                )
+            Card
+              CardHeader(
+                title='Node Health'
+                subheader='6 Ready, 3 Pending'
+              )
+              CardContent
+                Donut(
+                  data=this.data2
+                  width=300
+                  height=300
+                )
           Divider
           .buttons
             Fab(
@@ -174,6 +214,9 @@ const styles = (theme) => {
     },
     extendedIcon: {
       marginRight: theme.spacing.unit,
+    },
+    flex2: {
+      flex: '2 !important',
     },
   }
 }

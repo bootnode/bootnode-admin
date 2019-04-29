@@ -14,14 +14,14 @@ export default class Donut extends Component {
   }
 
   componentDidMount() {
-    this.createBarChart()
+    this.createDonut()
   }
 
   componentDidUpdate() {
     this.change(this.props.data)
   }
 
-  createBarChart = () => {
+  createDonut() {
     let svg = this.svg = select(this.svgNode)
       .append('g')
 
@@ -34,8 +34,8 @@ export default class Donut extends Component {
     svg.append('g')
       .attr('class', 'lines')
 
-    let width = this.width = 600
-    let height = this.height = 400
+    let width = this.width = this.props.width || 500
+    let height = this.height = this.props.height || 500
     let radius = this.radius = Math.min(width, height) / 2
 
     this.pie = pie()
@@ -209,12 +209,16 @@ export default class Donut extends Component {
 
   render() {
     return pug`
-      .d3-donut
-        svg(
-          ref=(node)=>{ this.svgNode = node }
-          width=500
-          height=500
+      .d3.d3-donut
+        .d3-content(
+          style={
+            width:  this.props.width,
+            height: this.props.height,
+          }
         )
+          svg(
+            ref=(node)=>{ this.svgNode = node }
+          )
         .tooltip(
           ref=(node)=>{ this.ttNode = node }
         )
