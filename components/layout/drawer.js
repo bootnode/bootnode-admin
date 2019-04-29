@@ -26,7 +26,7 @@ class MyDrawer extends React.Component {
     let accountLoaded = !!identity
 
     return pug `
-      if accountLoaded
+      if false && accountLoaded
         Drawer(
           ...props
           className=classes.drawer

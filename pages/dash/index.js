@@ -2,6 +2,7 @@ import React from 'react'
 import Router from 'next/router'
 import LoggedInPage from '../../components/pages/logged-in'
 import NodeCard from '../../components/node-card'
+import Donut from '../../components/d3/donut'
 import Divider from '@material-ui/core/Divider'
 import Fab from '@material-ui/core/Fab'
 import Add from '@material-ui/icons/Add'
@@ -37,6 +38,11 @@ class Index extends LoggedInPage {
 
       this.props.data.set('search', opts)
     }
+
+    this.data = [
+      { label:'Google', value: 40 },
+      { label:'Hanzo Private Cloud', value: 60 },
+    ]
   }
 
   async componentDidMount() {
@@ -142,6 +148,9 @@ class Index extends LoggedInPage {
     return pug`
       main#nodes.dash
         .content
+          .charts
+            Donut(data=this.data)
+          Divider
           .buttons
             Fab(
               variant='extended'
