@@ -24,7 +24,7 @@ export default class Map extends Component {
 
     let svg = select(this.svgNode)
 
-    let projection = geoMercator().translate([width/2, height*3/5]).scale(95)
+    let projection = geoMercator().translate([width*.49, height*.6]).scale(100)
 
     let path = geoPath().projection(projection)
 
