@@ -24,7 +24,7 @@ export default class Map extends Component {
 
     let svg = select(this.svgNode)
 
-    let projection = geoMercator()
+    let projection = geoMercator().translate([width/2, height*3/5]).scale(95)
 
     let path = geoPath().projection(projection)
 
@@ -32,7 +32,7 @@ export default class Map extends Component {
 
     let geoJson = await json(url)
 
-    svg.append('path').attr('d', path(geoJson))
+    svg.append('path').attr('d', path(geoJson)).attr('fill', '#81d4fa').attr('stroke', '#ffffff')
   }
 
   change(data) {

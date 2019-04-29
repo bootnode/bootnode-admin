@@ -18,7 +18,10 @@ export default class Donut extends Component {
   }
 
   componentDidUpdate() {
-    this.change(this.props.data)
+    if (!this.changed) {
+      this.changed = true
+      this.change(this.props.data)
+    }
   }
 
   createDonut() {

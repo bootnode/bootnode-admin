@@ -161,7 +161,7 @@ class Index extends LoggedInPage {
             Card(className=classes.flex2)
               CardHeader(
                 title='Zones'
-                subheader='Present in 6 Zones'
+                subheader='Present in 3 Regions, 6 Zones'
               )
               CardContent
                 Map(

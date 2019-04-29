@@ -53,6 +53,7 @@ class NodeCard extends React.Component {
           )
           .host
             | Hosted by Google
+          small us-east, zone-2
           Divider
         CardActions
           Button(size='small' color='primary' onClick=onDelete(data.id))
