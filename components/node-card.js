@@ -65,10 +65,10 @@ class NodeCard extends React.Component {
 const styles = (theme) => {
   return {
     orange: {
-      background: orange[400]
+      background: orange[500]
     },
     green: {
-      background: green[400]
+      background: green[500]
     },
   }
 }

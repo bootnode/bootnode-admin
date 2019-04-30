@@ -4,12 +4,22 @@ import LoggedInPage from '../../components/pages/logged-in'
 import NodeCard from '../../components/node-card'
 import Donut from '../../components/d3/donut'
 import Map from '../../components/d3/map'
+import NewNodeForm from '../../components/forms/new-node'
 import Divider from '@material-ui/core/Divider'
 import Fab from '@material-ui/core/Fab'
 import Add from '@material-ui/icons/Add'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+import green from '@material-ui/core/colors/green'
+import orange from '@material-ui/core/colors/orange'
 
 import BootNode from '../../src/bootnode/client'
 // import { HANZO_KEY, HANZO_ENDPOINT } from '../../src/settings.js'
@@ -31,6 +41,7 @@ class Index extends LoggedInPage {
     this.state = {
       rows: [],
       count: 0,
+      showNewNodeForm: false,
     }
 
     let opts = this.props.data.get('search')
@@ -44,13 +55,13 @@ class Index extends LoggedInPage {
     }
 
     this.data = [
-      { label:'Google', value: 40 },
-      { label:'Private Cloud', value: 60 },
+      { label:'Google', value: 40, color: '#4285F4' },
+      { label:'Private Cloud', value: 60, color: '#b17be0' },
     ]
 
     this.data2 = [
-      { label:'Running', value: 6 },
-      { label:'Pending', value: 1 },
+      { label:'Running', value: 6, color: green[500] },
+      { label:'Pending', value: 1, color: orange[500] },
     ]
   }
 
@@ -105,15 +116,33 @@ class Index extends LoggedInPage {
     }
   }
 
-  newNode = async () => {
+  showNewNodeForm = () => {
+    this.setState({
+      showNewNodeForm: true
+    })
+  }
+
+  hideNewNodeForm = () => {
+    this.setState({
+      showNewNodeForm: false
+    })
+  }
+
+  newNode = async (n = 1) => {
+    this.hideNewNodeForm()
     startLoading(' ')
     try {
+      let ps = []
       let api = new BootNode()
-      await api.request('PUT', 'nodes')
 
+      for (let i = 0; i < n; i++) {
+        ps.push(api.request('PUT', 'nodes'))
+      }
+
+      await Promise.all(ps)
       await this.loadTable()
     } catch (e) {
-
+      console.log('error', e)
     }
     stopLoading(' ')
   }
@@ -138,6 +167,7 @@ class Index extends LoggedInPage {
     let {
       rows,
       count,
+      showNewNodeForm,
     } = this.state
 
     let nodeCardsJSX = []
@@ -195,13 +225,25 @@ class Index extends LoggedInPage {
             Fab(
               variant='extended'
               color='primary'
-              onClick=this.newNode
+              onClick=this.showNewNodeForm
             )
               Add(className=classes.extendedIcon)
-              | New Node
+              | Launch Node
           Divider
         .content.node-cards
           =nodeCardsJSX
+        Dialog(
+          open=showNewNodeForm
+          close=this.hideNewNodeForm
+        )
+          DialogTitle.new-node-dialog
+            | Launch Node
+          DialogContent
+            NewNodeForm(
+              data=this.props.rootData
+              onSubmit=this.newNode
+              onClose=this.hideNewNodeForm
+            )
 
     `
   }

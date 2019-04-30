@@ -56,13 +56,13 @@ export default class Donut extends Component {
       .outerRadius(radius * 0.9)
 
     this.legendRectSize = (radius * 0.05)
-    this.legendSpacing = radius * 0.02
+    this.legendSpacing = radius * 0.05
 
     this.div = select(this.ttNode).append('div').attr('class', 'toolTip')
 
     svg.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
-    this.colorRange = schemeCategory10
+    this.colorRange = this.props.data.map(x => x.color)
     this.color = scaleOrdinal()
       .range(this.colorRange)
 
@@ -135,79 +135,80 @@ export default class Donut extends Component {
     legend.append('rect')
       .attr('width', legendRectSize)
       .attr('height', legendRectSize)
+      .attr('x', -legendRectSize - legendSpacing)
       .style('fill', color)
       .style('stroke', color)
 
     legend.append('text')
-      .attr('x', legendRectSize + legendSpacing)
-      .attr('y', legendRectSize - legendSpacing)
+      .attr('x', 0)
+      .attr('y', legendRectSize)
       .text((d) => d)
 
     /* ------- TEXT LABELS -------*/
 
-    let text = svg.select('.labelName').selectAll('text')
-      .data(pie(data), d => d.data.label)
-
-    text.enter()
-      .append('text')
-      .attr('dy', '.35em')
-      .text((d) => (d.data.label+': '+d.value+'%'))
-
     let midAngle = d => d.startAngle + (d.endAngle - d.startAngle)/2
 
-    text
-      .transition().duration(1000)
-      .attrTween('transform', (d) => {
-        this._currentT = this._currentT || d
-        let i = interpolate(this._currentT, d)
-        this._currentT = i(0)
-        return (t) => {
-          let d2 = i(t)
-          let pos = outerArc.centroid(d2)
-          pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1)
-          return 'translate('+ pos +')'
-        }
-      })
-      .styleTween('text-anchor', (d) => {
-        this._currentT = this._currentT || d
-        let i = interpolate(this._currentT, d)
-        this._currentT = i(0)
-        return (t) => {
-          let d2 = i(t)
-          return midAngle(d2) < Math.PI ? 'start':'end'
-        }
-      })
-      .text(d => d.data.label+': '+d.value+'%')
+    // let text = svg.select('.labelName').selectAll('text')
+    //   .data(pie(data), d => d.data.label)
+
+    // text.enter()
+    //   .append('text')
+    //   .attr('dy', '.35em')
+    //   .text((d) => (d.data.label+': '+d.value+'%'))
+
+    // text
+    //   .transition().duration(1000)
+    //   .attrTween('transform', (d) => {
+    //     this._currentT = this._currentT || d
+    //     let i = interpolate(this._currentT, d)
+    //     this._currentT = i(0)
+    //     return (t) => {
+    //       let d2 = i(t)
+    //       let pos = outerArc.centroid(d2)
+    //       pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1)
+    //       return 'translate('+ pos +')'
+    //     }
+    //   })
+    //   .styleTween('text-anchor', (d) => {
+    //     this._currentT = this._currentT || d
+    //     let i = interpolate(this._currentT, d)
+    //     this._currentT = i(0)
+    //     return (t) => {
+    //       let d2 = i(t)
+    //       return midAngle(d2) < Math.PI ? 'start':'end'
+    //     }
+    //   })
+    //   .text(d => d.data.label+': '+d.value+'%')
 
 
-    text.exit()
-      .remove()
+    // text.exit()
+    //   .remove()
 
     /* ------- SLICE TO TEXT POLYLINES -------*/
 
-    console.log(pie(data))
+    // console.log(pie(data))
 
-    let polyline = svg.select('.lines').selectAll('polyline')
-      .data(pie(data), d => d.data.label)
+    // let polyline = svg.select('.lines').selectAll('polyline')
+    //   .data(pie(data), d => d.data.label)
 
-    polyline.enter()
-      .append('polyline')
+    // polyline.enter()
+    //   .append('polyline')
 
-    polyline.transition().duration(1000)
-      .attrTween('points', (d) => {
-        this._currentP = this._currentP || d
-        let i = interpolate(this._currentP, d)
-        this._currentP = i(0)
-        return (t) => {
-          let d2 = i(t)
-          let pos = outerArc.centroid(d2)
-          pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1)
-          return [arc.centroid(d2), outerArc.centroid(d2), pos]
-        }
-      })
+    // polyline.transition().duration(1000)
+    //   .attrTween('points', (d) => {
+    //     this._currentP = this._currentP || d
+    //     let i = interpolate(this._currentP, d)
+    //     this._currentP = i(0)
+    //     return (t) => {
+    //       let d2 = i(t)
+    //       let pos = outerArc.centroid(d2)
+    //       pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1)
+    //       return [arc.centroid(d2), outerArc.centroid(d2), pos]
+    //     }
+    //   })
 
-    polyline.exit()
-      .remove()
+    // polyline.exit()
+    //   .remove()
   }
 
   render() {
