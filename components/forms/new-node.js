@@ -14,7 +14,7 @@ import { watch } from 'react-referential'
 import isRequired from '../../src/control-middlewares/isRequired'
 
 let imageOptions = {
-  'casper-2': 'Casper 2.0'
+  'casper-2': 'Casper 0.2'
 }
 
 let providerOptions = {
