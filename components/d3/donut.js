@@ -7,6 +7,11 @@ import 'd3-transition'
 import { interpolate } from 'd3-interpolate'
 
 export default class Donut extends Component {
+  static defaultProps = {
+    prefix: '',
+    postfix: ''
+  }
+
   constructor(props){
     super(props)
 
@@ -18,10 +23,7 @@ export default class Donut extends Component {
   }
 
   componentDidUpdate() {
-    if (!this.changed) {
-      this.changed = true
-      this.change(this.props.data)
-    }
+    this.change(this.props.data)
   }
 
   createDonut() {
@@ -62,15 +64,10 @@ export default class Donut extends Component {
 
     svg.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
-    this.colorRange = this.props.data.map(x => x.color)
-    this.color = scaleOrdinal()
-      .range(this.colorRange)
-
     this.change(this.props.data)
   }
 
   change(data) {
-
     let {
       svg,
       width,
@@ -82,11 +79,18 @@ export default class Donut extends Component {
       legendRectSize,
       legendSpacing,
       div,
-      color,
-      colorRange
     } = this
 
-	/* ------- PIE SLICES -------*/
+    let {
+      prefix,
+      postfix
+    } = this.props
+
+    let colorRange = data.map(x => x.color)
+    let color = scaleOrdinal()
+      .range(colorRange)
+
+    /* ------- PIE SLICES -------*/
 	let slice = svg.select('.slices').selectAll('path.slice')
       .data(pie(data), (d) => d.data.label)
 
@@ -110,7 +114,7 @@ export default class Donut extends Component {
         div.style('left', width/2 + x+10+'px')
         div.style('top', height/2 + y-25+'px')
         div.style('display', 'inline-block')
-        div.html((d.data.label)+'<br>'+(d.data.value)+'%')
+        div.html((d.data.label)+'<br>'+prefix+(d.data.value)+postfix)
       })
 
     slice

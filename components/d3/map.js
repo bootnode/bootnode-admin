@@ -23,9 +23,9 @@ export default class Map extends Component {
     let width = this.props.width || 1000
     let height = this.props.height || 500
 
-    let svg = select(this.svgNode)
+    let svg = this.svg = select(this.svgNode)
 
-    let projection = geoMercator().translate([width*.49, height*.63]).scale(95)
+    let projection = this.projection = geoMercator().translate([width*.49, height*.63]).scale(95)
 
     let path = geoPath().projection(projection)
 
@@ -35,18 +35,20 @@ export default class Map extends Component {
 
     svg.append('path').attr('d', path(geoJson)).attr('fill', '#81d4fa').attr('stroke', '#ffffff')
 
-    let point = [-77.4360, 37.5407]
-      svg.selectAll('circle')
-		.data([point]).enter()
-		.append('circle')
-		.attr('cx', function (d) { console.log('projection', projection(d)); return projection(d)[0]; })
-		.attr('cy', function (d) { return projection(d)[1]; })
-		.attr('r', '4px')
-		.attr('fill', green[500])
-	    .attr('stroke', '#fff')
+    this.change(this.props.data)
   }
 
   change(data) {
+    let projection = this.projection
+
+    this.svg.selectAll('circle')
+      .data(data).enter()
+      .append('circle')
+      .attr('cx', function (d) { return projection(d.point)[0]; })
+      .attr('cy', function (d) { return projection(d.point)[1]; })
+      .attr('r', function(d) { return Math.sqrt(d.count * 4 + 12) } )
+      .attr('fill', green[500])
+      .attr('stroke', '#fff')
   }
 
   render() {

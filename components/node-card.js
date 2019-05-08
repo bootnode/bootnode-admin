@@ -47,16 +47,16 @@ class NodeCard extends React.Component {
           br
           MuiText(
             readOnly
-            value=data.ports.join(', ')
+            value=data.ports && data.ports.join(', ')
             label='Ports'
             variant='outlined'
           )
           .host
             | Hosted by Google
-          small us-east, zone-2
+          small=data.zone
           Divider
         CardActions
-          Button(size='small' color='primary' onClick=onDelete(data.id))
+          Button(size='small' color='primary' onClick=onDelete(data))
             | Delete
     `
   }

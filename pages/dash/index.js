@@ -31,6 +31,17 @@ import { withStyles } from '@material-ui/core/styles'
 import { watch } from '../../src/referential/provider'
 import { startLoading, stopLoading } from '../../components/app/loader'
 
+const REGIONS = {
+  'us-central1': [-95.866667, 41.25],
+  'europe-west6': [8.55, 47.366667],
+  'asia-east2': [114.15769, 22.28552],
+}
+
+const HEALTH_COLORS = {
+  Running: green[500],
+  Pending: orange[500],
+}
+
 @watch('nodesPage')
 class Index extends LoggedInPage {
   constructor(props) {
@@ -58,11 +69,6 @@ class Index extends LoggedInPage {
       { label:'Google', value: 40, color: '#4285F4' },
       { label:'Private Cloud', value: 60, color: '#b17be0' },
     ]
-
-    this.data2 = [
-      { label:'Running', value: 6, color: green[500] },
-      { label:'Pending', value: 1, color: orange[500] },
-    ]
   }
 
   async componentDidMount() {
@@ -78,8 +84,6 @@ class Index extends LoggedInPage {
 
     let fn = async () => {
       await this.loadTable()
-
-      this.timeoutId = setTimeout(fn, 10000)
     }
 
     this.timeoutId = setTimeout(fn, 10000)
@@ -91,9 +95,6 @@ class Index extends LoggedInPage {
 
   async loadTable() {
     let api = new BootNode()
-
-    // let opts = this.props.data.get('search')
-    //
 
     let res = await api.request('GET', 'nodes')
 
@@ -112,7 +113,6 @@ class Index extends LoggedInPage {
   onRowClick = (i) => {
     if (this.state.rows[i]) {
       let id = this.state.rows[i].id
-      // Router.push(`/dash/user?id=${id}`)
     }
   }
 
@@ -128,18 +128,13 @@ class Index extends LoggedInPage {
     })
   }
 
-  newNode = async (n = 1) => {
+  newNode = async (data) => {
     this.hideNewNodeForm()
     startLoading(' ')
     try {
-      let ps = []
       let api = new BootNode()
 
-      for (let i = 0; i < n; i++) {
-        ps.push(api.request('PUT', 'nodes'))
-      }
-
-      await Promise.all(ps)
+      await api.request('PUT', 'nodes', data)
       await this.loadTable()
     } catch (e) {
       console.log('error', e)
@@ -147,18 +142,88 @@ class Index extends LoggedInPage {
     stopLoading(' ')
   }
 
-  deleteNode = (id) => {
+  deleteNode = ({id, zone}) => {
     return async () => {
       startLoading(' ')
       try {
         let api = new BootNode()
-        await api.request('DELETE', 'nodes/' + id)
 
+        await api.request('DELETE', 'nodes/' + id, {zone})
         await this.loadTable()
       } catch (e) {
       }
       stopLoading(' ')
     }
+  }
+
+  // Get the Lon/Lat plus radius of
+  getMapPoints() {
+    let { rows } = this.state
+
+    let points = {}
+
+    for (let k in rows) {
+      let data = rows[k]
+
+      // accumulate all the data
+      let { zone } = data
+      let region = zone.replace(/(-.+)-.+?$/ig, '$1')
+
+      if (points[region]) {
+        points[region].count++
+      } else {
+        points[region] = {
+          region: REGIONS[region],
+          count: 1,
+        }
+      }
+    }
+
+    let ps = []
+
+    // spread out all the data
+    for (let k in points) {
+      let point = points[k]
+
+      ps.push({
+        point: point.region,
+        count: point.count,
+      })
+    }
+
+    return ps
+  }
+
+  getHealths() {
+    let { rows } = this.state
+
+    let healths = {}
+
+    for (let k in rows) {
+      let data = rows[k]
+
+      let status = data.instances[0].status
+
+      if (healths[status]) {
+        healths[status].value += 1
+      } else {
+        healths[status] = {
+          label: status,
+          value: 1,
+          color: HEALTH_COLORS[status],
+        }
+      }
+    }
+
+    let hs = []
+
+    for (let k in healths) {
+      let health = healths[k]
+
+      hs.push(health)
+    }
+
+    return hs
   }
 
   render() {
@@ -184,6 +249,27 @@ class Index extends LoggedInPage {
       `)
     }
 
+    let points = this.getMapPoints()
+    let healths = this.getHealths()
+
+    if (healths.length == 0) {
+      healths = [{
+        label: 'Running',
+        value: 1,
+        color: green[500],
+      }]
+    }
+
+    let hs = []
+
+    for (let k in healths) {
+      let health = healths[k]
+
+      hs.push(health.value + ' ' + health.label)
+    }
+
+    let healthStr = hs.join(', ')
+
     return pug`
       main#nodes.dash
         .content
@@ -191,12 +277,13 @@ class Index extends LoggedInPage {
             Card(className=classes.flex2)
               CardHeader(
                 title='Zones'
-                subheader='Present in 3 Regions, 6 Zones'
+                subheader='Deployed in ' + points.length + ' Regions'
               )
               CardContent
                 Map(
                   width=600
                   height=300
+                  data=points
                 )
             Card
               CardHeader(
@@ -212,11 +299,11 @@ class Index extends LoggedInPage {
             Card
               CardHeader(
                 title='Node Health'
-                subheader='6 Ready, 3 Pending'
+                subheader=healthStr
               )
               CardContent
                 Donut(
-                  data=this.data2
+                  data=healths
                   width=300
                   height=300
                 )

@@ -13,10 +13,10 @@ export default class LoggedInPage extends React.Component {
   }
 
   componentDidMount() {
-    // if (!isLoggedIn()) {
-    //   Router.push(this.path)
-    //   return
-    // }
+    if (!isLoggedIn()) {
+      Router.push(this.path)
+      return
+    }
 
     // Test if the user is actually logged in
     let foo = () => {

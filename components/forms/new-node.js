@@ -24,11 +24,25 @@ let providerOptions = {
 
 
 let regionOptions = {
-  'us-east': 'us-east'
+  '': 'Select Region',
+  'us-central1': 'us-central1',
+  'eu-west6': 'europe-west6',
+  'asia-east2': 'asia-east2',
 }
 
 let zoneOptions = {
-  'us-east-4': 'us-east-4'
+  'us-central1': {
+    '': 'Select Zone',
+    'us-central1-a': 'us-central1-a',
+  },
+  'eu-west6': {
+    '': 'Select Zone',
+    'europe-west6-a': 'europe-west6-a',
+  },
+  'asia-east2': {
+    '': 'Select Zone',
+    'asia-east2-a': 'asia-east2-a',
+  }
 }
 
 @watch('newNodeform')
@@ -39,25 +53,33 @@ export default class NewNodeForm extends Form {
     this.inputs = {
       number: new InputData({
         name: 'number',
-        middleware: [isRequired]
+        data: props.data,
+        middleware: [isRequired],
+        defaultValue: 1,
       }),
       image: new InputData({
         name: 'image',
-        middleware: [isRequired]
+        data: props.data,
+        middleware: [isRequired],
+        defaultValue: 'casper-2',
       }),
       provider: new InputData({
         name: 'provider',
-        middleware: [isRequired]
+        data: props.data,
+        middleware: [isRequired],
+        defaultValue: 'private-cloud',
       }),
       region: new InputData({
         name: 'region',
         data: props.data,
-        middleware: [isRequired]
+        middleware: [isRequired],
+        defaultValue: '',
       }),
       zone: new InputData({
         name: 'zone',
         data: props.data,
-        middleware: [isRequired]
+        middleware: [isRequired],
+        defaultValue: '',
       }),
     }
 
@@ -69,7 +91,7 @@ export default class NewNodeForm extends Form {
 
   _submit = () => {
     if (this.onSubmit) {
-      this.onSubmit(this.inputs.number.val())
+      this.onSubmit(this.props.data.get())
     }
   }
 
@@ -90,14 +112,12 @@ export default class NewNodeForm extends Form {
             label='Number'
             variant='outlined'
             options=imageOptions
-            value=1
           )
           MuiText(
             ...this.inputs.image
             label='Image'
             variant='outlined'
             options=imageOptions
-            value='casper-2'
             select
           )
         .form-group
@@ -106,7 +126,6 @@ export default class NewNodeForm extends Form {
             label='Provider'
             variant='outlined'
             options=providerOptions
-            value='private-cloud'
             select
           )
         .form-group.columns
@@ -115,15 +134,13 @@ export default class NewNodeForm extends Form {
             label='Region'
             variant='outlined'
             options=regionOptions
-            value='us-east'
             select
           )
           MuiText(
             ...this.inputs.zone
             label='Zone'
             variant='outlined'
-            options=zoneOptions
-            value='us-east-4'
+            options=zoneOptions[this.inputs.region.val()]
             select
           )
         if this.getErrorMessage()
