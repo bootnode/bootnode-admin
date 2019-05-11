@@ -4,6 +4,7 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import LoggedInPage from '../../components/pages/logged-in'
 import NodeCard from '../../components/node-card'
+import Table, { ColumnData } from '../../components/tables/table'
 import Donut from '../../components/d3/donut'
 import Map from '../../components/d3/map'
 import NewNodeForm from '../../components/forms/new-node'
@@ -18,6 +19,7 @@ import Add from '@material-ui/icons/Add'
 import Language from '@material-ui/icons/Language'
 import ScatterPlot from '@material-ui/icons/ScatterPlot'
 import CheckCircleOutlined from '@material-ui/icons/CheckCircleOutlined'
+import Fingerprint from '@material-ui/icons/Fingerprint'
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -37,6 +39,11 @@ import capitalize from '../../src/string/capitalize'
 import { withStyles } from '@material-ui/core/styles'
 import { watch } from '../../src/referential/provider'
 import { startLoading, stopLoading } from '../../components/app/loader'
+
+const NODE_COLUMNS = [
+  new ColumnData('instances.0.status', CheckCircleOutlined),
+  new ColumnData('id', Fingerprint),
+]
 
 const REGIONS = {
   'us-central1': [-95.866667, 41.25],
@@ -330,6 +337,11 @@ class Index extends LoggedInPage {
                     height=250-32
                   )
         Divider
+        // .content.node-table
+        //   Table(
+        //     data=rows
+        //     columns=NODE_COLUMNS
+        //   )
         .content.node-cards
           =nodeCardsJSX
         Dialog(

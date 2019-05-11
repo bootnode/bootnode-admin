@@ -46,7 +46,7 @@ class NodeCard extends React.Component {
           br
           MuiText(
             readOnly
-            value=data.ports && data.ports.join(', ')
+            value=data.ports && data.ports.map(x => x.name + ': ' + x.port).join(', ')
             label='Ports'
             variant='outlined'
           )
