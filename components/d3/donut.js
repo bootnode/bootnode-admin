@@ -23,7 +23,12 @@ export default class Donut extends Component {
   }
 
   componentDidUpdate() {
-    this.change(this.props.data)
+    let dataStr = JSON.stringify(this.props.data)
+
+    if (dataStr != this.oldDataStr) {
+      this.change(this.props.data)
+      this.oldDataStr = dataStr
+    }
   }
 
   createDonut() {
@@ -91,17 +96,18 @@ export default class Donut extends Component {
       .range(colorRange)
 
     /* ------- PIE SLICES -------*/
-	let slice = svg.select('.slices').selectAll('path.slice')
+	let slice = svg.select('.slices')
+	  .selectAll('path')
       .data(pie(data), (d) => d.data.label)
 
     slice.enter()
-      .insert('path')
+      .append('path')
       .style('fill', (d) => color(d.data.label))
       .attr('class', 'slice')
 
     slice
       .transition().duration(1000)
-      .attrTween('d', (d) => {
+      .attrTween('d', function (d) {
         this._currentS = this._currentS || d
         let i = interpolate(this._currentS, d)
         this._currentS = i(0)

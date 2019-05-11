@@ -1,5 +1,6 @@
 #nodes.dash
   .node-cards
+    margin-top: 1rem
     display: grid
     grid-gap: 1rem
     grid-template-columns: repeat(auto-fill,minmax(280px, 1fr))
@@ -11,6 +12,35 @@
 
   .node-card-content
     padding-bottom: 0
+
+  .charts
+    display: grid
+    padding: 1rem 0
+
+    grid-template-columns: 300px 300px 270px 270px 270px
+    grid-template-rows: 150px 150px
+    color: rgba(0,0,0,.87)
+
+    .chartTitle
+      margin-bottom: 1rem
+      font-weight: bold
+      text-transform: uppercase
+      display: flex
+      flex-direction: columns
+
+      & > *
+        margin-right: .5rem
+
+    .chart
+      place-self: stretch
+      padding: 0 1rem
+      grid-row-start: 1
+      grid-row-end: span 2
+      border-right: 1px solid rgba(0,0,0,0.27)
+
+    .map
+      grid-column-start: 1
+      grid-column-end: span 2
 
 .form-group:first-child
   margin-top: .5rem

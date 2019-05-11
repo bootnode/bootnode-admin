@@ -101,7 +101,12 @@ class Header extends Form {
           )
             Toolbar(className=classes.toolbar)
               Link.columns.logo(href='/')
-                h3 BOOTNODE
+                img(src='/static/img/logo.png' className=classes.logoImg)
+                h3 bootnode
+              Link(href='/dash' className=classes.link)
+                p Documentation
+              Link(href='/dash' className=classes.link)
+                p Support
               div(className=classes.search)
               // form(
               //   className=classes.search
@@ -120,7 +125,7 @@ class Header extends Form {
               //     }
               //   )
               IconButton(
-                className=classes.flex0
+                className=classes.iconButton
                 aria-owns=(open ? 'menu-appbar' : undefined)
                 aria-haspopup='true'
                 onClick=this.handleMenu
@@ -156,14 +161,24 @@ const styles = (theme) => {
       paddingLeft: theme.spacing.unit * 2,
     },
     logoImg: {
-      maxHeight: 36,
+      maxHeight: 64,
+      marginRight: 0,
     },
     textField: {
       marginLeft: theme.spacing.unit,
       marginRight: theme.spacing.unit,
     },
+    iconButton: {
+      flex: 0,
+      padding: 0,
+      marginRight: '1rem',
+    },
     flex0: {
       flex: 0,
+    },
+    link: {
+      color: 'white',
+      marginLeft: '2rem',
     },
     search: {
       flexGrow: 1,

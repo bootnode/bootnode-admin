@@ -10,21 +10,20 @@ import Divider from '@material-ui/core/Divider'
 import { MuiText } from 'react-referential-forms'
 
 import { withStyles } from '@material-ui/core/styles'
-import green from '@material-ui/core/colors/green'
+import lightGreen from '@material-ui/core/colors/lightGreen'
 import orange from '@material-ui/core/colors/orange'
 import classnames from 'classnames'
 
 class NodeCard extends React.Component {
   render() {
     let { classes, data, onDelete, ...props }= this.props
-    console.log('Node Card Data', data)
 
     let status = data.instances[0].status
 
     let statusColor = pug`
       Avatar(
         className=classnames({
-          [classes.green]: status === 'Running',
+          [classes.lightGreen]: status === 'Running',
           [classes.orange]: status !== 'Running',
         })
       )
@@ -67,8 +66,8 @@ const styles = (theme) => {
     orange: {
       background: orange[500]
     },
-    green: {
-      background: green[500]
+    lightGreen: {
+      background: lightGreen[500]
     },
   }
 }

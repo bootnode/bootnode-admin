@@ -148,10 +148,10 @@ export default class NewNodeForm extends Form {
             = this.getErrorMessage()
         .buttons.columns
           div
-            Button(type='submit' variant='contained' color='primary' size='large')
+            Button(type='submit' color='primary' size='large')
               | Launch
           div
-            Button(onClick=this.props.onClose variant='contained' size='large')
+            Button(onClick=this.props.onClose size='large')
               | Cancel
         if this.state.loading || this.state.validating
           .progress

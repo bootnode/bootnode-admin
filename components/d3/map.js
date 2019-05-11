@@ -25,7 +25,7 @@ export default class Map extends Component {
 
     let svg = this.svg = select(this.svgNode)
 
-    let projection = this.projection = geoMercator().translate([width*.49, height*.63]).scale(95)
+    let projection = this.projection = geoMercator().translate([width*.49, height*.63]).scale(90)
 
     let path = geoPath().projection(projection)
 
@@ -46,7 +46,7 @@ export default class Map extends Component {
       .append('circle')
       .attr('cx', function (d) { return projection(d.point)[0]; })
       .attr('cy', function (d) { return projection(d.point)[1]; })
-      .attr('r', function(d) { return Math.sqrt(d.count * 4 + 12) } )
+      .attr('r', function(d) { return Math.sqrt(d.count * 8 + 8) } )
       .attr('fill', green[500])
       .attr('stroke', '#fff')
   }
