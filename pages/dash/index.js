@@ -7,12 +7,12 @@ import NodeCard from '../../components/node-card'
 import Table, { ColumnData } from '../../components/tables/table'
 import Donut from '../../components/d3/donut'
 import Map from '../../components/d3/map'
+import GraphViz from '../../components/d3/graphviz'
 import NewNodeForm from '../../components/forms/new-node'
 import Divider from '@material-ui/core/Divider'
 import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
-import CardHeader from '@material-ui/core/CardHeader'
-import CardContent from '@material-ui/core/CardContent'
+import IconButton from '@material-ui/core/IconButton'
+import Paper from '@material-ui/core/Paper'
 import Link from '../../components/link'
 
 import Add from '@material-ui/icons/Add'
@@ -20,6 +20,15 @@ import Language from '@material-ui/icons/Language'
 import ScatterPlot from '@material-ui/icons/ScatterPlot'
 import CheckCircleOutlined from '@material-ui/icons/CheckCircleOutlined'
 import Fingerprint from '@material-ui/icons/Fingerprint'
+import CloudDoneOutlined from '@material-ui/icons/CloudDoneOutlined'
+import LinkIcon from '@material-ui/icons/Link'
+import Public from '@material-ui/icons/Public'
+import Label from '@material-ui/icons/LabelOutlined'
+import DNS from '@material-ui/icons/Dns'
+import Timer from '@material-ui/icons/Timer'
+import Settings from '@material-ui/icons/Settings'
+import Delete from '@material-ui/icons/Delete'
+import Timeline from '@material-ui/icons/Timeline'
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -29,8 +38,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import lightGreen from '@material-ui/core/colors/lightGreen'
 import orange from '@material-ui/core/colors/orange'
+import red from '@material-ui/core/colors/red'
 
 import BootNode from '../../src/bootnode/client'
+import Casper from '../../src/casper/client'
 // import { HANZO_KEY, HANZO_ENDPOINT } from '../../src/settings.js'
 import { renderUIDate } from '../../src/util/date.js'
 
@@ -39,11 +50,36 @@ import capitalize from '../../src/string/capitalize'
 import { withStyles } from '@material-ui/core/styles'
 import { watch } from '../../src/referential/provider'
 import { startLoading, stopLoading } from '../../components/app/loader'
+import classnames from 'classnames'
 
-const NODE_COLUMNS = [
-  new ColumnData('instances.0.status', CheckCircleOutlined),
-  new ColumnData('id', Fingerprint),
-]
+const NODE_COLUMNS = (obj) => {
+  return [
+    new ColumnData(
+      'instances.0.status',
+      CheckCircleOutlined,
+      x => pug`span.node-status(className=classnames({ ready: x=='Running', pending: x=='Pending' }))`
+    ),
+    new ColumnData('id', Fingerprint),
+    new ColumnData('blockchain', Label, (x, y) => x + '-' + y.network),
+    new ColumnData('zone', Public),
+    new ColumnData('ip', CloudDoneOutlined),
+    new ColumnData('metadata.block.blockHash', DNS, x => x, 'too-long'),
+    new ColumnData('latencyMillis', Timer, (x) => {
+      let ms = parseInt(x, 10)
+      return isNaN(ms) ? 'n/a' : '' + ms + 'ms'
+    }),
+    new ColumnData('id', Settings, (x, y) => {
+      return pug`
+        if y.metadata && y.metadata.dag
+          IconButton(size='small' color='primary' onClick=obj.showDag(y))
+            Timeline
+        IconButton(size='small' color='primary' onClick=obj.deleteNode(y))
+          Delete
+      `
+    }),
+    // new ColumnData('ports', LinkIcon, x => (x && x.map) ? x.map(y => y.name + ': ' + y.port).join(', ') : ''),
+  ]
+}
 
 const REGIONS = {
   'us-central1': [-95.866667, 41.25],
@@ -67,6 +103,7 @@ class Index extends LoggedInPage {
       rows: [],
       count: 0,
       showNewNodeForm: false,
+      showDag: false,
     }
 
     let opts = this.props.data.get('search')
@@ -112,11 +149,53 @@ class Index extends LoggedInPage {
   async loadTable() {
     let api = new BootNode()
 
-    let res = await api.request('GET', 'nodes')
+    let { data } = await api.request('GET', 'nodes')
+
+    // let ps = []
+    // for (let k in data) {
+    //   let row = data[k]
+
+    //   if (!row.ip) {
+    //     ps.push(async () => {})
+    //     continue
+    //   }
+
+    //   let api2 = new Casper('https://' + row.ip)
+
+    //   let fn = async () => {
+    //     let start = new Date().getMilliseconds()
+    //     let val = await api2.request('PUT', 'show/blocks', {depth: 1})
+    //     return {
+    //       blockData: val,
+    //       startTime: start,
+    //       endTime: new Date().getMilliseconds()
+    //     }
+    //   }
+
+    //   ps.push(fn())
+    // }
+
+    // let blockDatas = await Promise.all(ps)
+
+    // for (let k in data) {
+    //   let row = data[k]
+    //   let blockData = blockDatas[k]
+
+    //   row.latency = blockData.endTime - blockData.startTime
+    //   row.blockHash = blockData.blockHash
+    // }
+
+    for (let k in data) {
+      let row = data[k]
+
+      if (!row.ip) {
+        row.instances[0].status = 'Pending'
+      }
+    }
 
     this.setState({
-      rows: res.data,
-      count: res.data.length,
+      rows: data,
+      count: data.length,
     })
   }
 
@@ -141,6 +220,22 @@ class Index extends LoggedInPage {
   hideNewNodeForm = () => {
     this.setState({
       showNewNodeForm: false
+    })
+  }
+
+  showDag = ({id, metadata}) => {
+    return () => {
+      this.setState({
+        currentDag: { id: id, content: metadata.dag.content },
+        showDag: true,
+      })
+    }
+  }
+
+  hideDag = () => {
+    this.setState({
+      currentDag: null,
+      showDag: false,
     })
   }
 
@@ -258,6 +353,8 @@ class Index extends LoggedInPage {
       rows,
       count,
       showNewNodeForm,
+      showDag,
+      currentDag,
     } = this.state
 
     let nodeCardsJSX = []
@@ -306,44 +403,44 @@ class Index extends LoggedInPage {
               span(className=classes.launchText) Launch Node
 
         .content
-          Card(className=classes.card)
-            CardContent(className=classes.noPadding)
-              .charts
-                .chart.map
-                  .chartTitle
-                    Language
-                    span='Deployed in ' + points.length + ' Locations'
-                  Map(
-                    width=600-32
-                    height=250
-                    data=points
-                  )
-                .chart
-                  .chartTitle
-                    ScatterPlot
-                    span='40% Decentralized'
-                  Donut(
-                    data=this.data
-                    width=250-32
-                    height=250-32
-                  )
-                .chart
-                  .chartTitle
-                    CheckCircleOutlined
-                    span=healthStr
-                  Donut(
-                    data=healths
-                    width=250-32
-                    height=250-32
-                  )
-        Divider
-        // .content.node-table
-        //   Table(
-        //     data=rows
-        //     columns=NODE_COLUMNS
-        //   )
-        .content.node-cards
-          =nodeCardsJSX
+          Paper(square=true)
+            .charts
+              .chart.map
+                .chartTitle
+                  Language
+                  span='Deployed in ' + points.length + ' Locations'
+                Map(
+                  width=600-32
+                  height=250
+                  data=points
+                )
+              .chart
+                .chartTitle
+                  ScatterPlot
+                  span='40% Decentralized'
+                Donut(
+                  data=this.data
+                  width=250-32
+                  height=250-32
+                )
+              .chart
+                .chartTitle
+                  CheckCircleOutlined
+                  span=healthStr
+                Donut(
+                  data=healths
+                  width=250-32
+                  height=250-32
+                )
+        .content
+          Paper(square=true)
+            .node-table
+              Table(
+                data=rows
+                columns=NODE_COLUMNS(this)
+              )
+        // .content.node-cards
+        //   =nodeCardsJSX
         Dialog(
           open=showNewNodeForm
           close=this.hideNewNodeForm
@@ -356,6 +453,18 @@ class Index extends LoggedInPage {
               onSubmit=this.newNode
               onClose=this.hideNewNodeForm
             )
+        Dialog(
+          open=showDag
+          close=this.hideDag
+        )
+          if currentDag
+            DialogTitle.dag-dialog
+              =currentDag.id + ' DAG'
+            DialogContent
+              GraphViz(data=currentDag.content)
+            DialogActions
+              Button(onClick=this.hideDag color='primary')
+                | Close
 
     `
   }
@@ -386,9 +495,6 @@ const styles = (theme) => {
     },
     launchText: {
       marginRight: theme.spacing.unit,
-    },
-    card: {
-      borderRadius: 0,
     },
   }
 }

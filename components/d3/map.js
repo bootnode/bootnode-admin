@@ -16,7 +16,12 @@ export default class Map extends Component {
   }
 
   componentDidUpdate() {
-    this.change(this.props.data)
+    let dataStr = JSON.stringify(this.props.data)
+
+    if (dataStr != this.oldDataStr) {
+      this.change(this.props.data)
+      this.oldDataStr = dataStr
+    }
   }
 
   async createMap() {
