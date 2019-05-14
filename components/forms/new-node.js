@@ -24,10 +24,16 @@ let providerOptions = {
 
 
 let regionOptions = {
-  '': 'Select Region',
-  'us-central1': 'us-central1',
-  'eu-west6': 'europe-west6',
-  'asia-east2': 'asia-east2',
+  'private-cloud': {
+    '': 'Select Region',
+    'test': 'Test',
+  },
+  'google': {
+    '': 'Select Region',
+    'us-central1': 'us-central1',
+    'eu-west6': 'europe-west6',
+    'asia-east2': 'asia-east2',
+  },
 }
 
 let zoneOptions = {
@@ -42,7 +48,11 @@ let zoneOptions = {
   'asia-east2': {
     '': 'Select Zone',
     'asia-east2-a': 'asia-east2-a',
-  }
+  },
+  'test': {
+    '': 'Select Zone',
+    'test': 'test',
+  },
 }
 
 @watch('newNodeform')
@@ -87,6 +97,25 @@ export default class NewNodeForm extends Form {
 
     this.onSubmit = this.props.onSubmit
     this.onClose = this.props.onClose
+
+    this._onSet = (k, v, old) => {
+      if (k === 'region') {
+        if (v !== old) {
+          this.inputs.zone.val('')
+        }
+      } else if (k === 'provider') {
+        if (v !== old) {
+          this.inputs.region.val('')
+          this.inputs.zone.val('')
+        }
+      }
+    }
+
+    this.props.data.on('set', this._onSet)
+  }
+
+  componentWillUnmount() {
+    this.props.data.off('set', this._onSet)
   }
 
   _submit = () => {
@@ -133,7 +162,7 @@ export default class NewNodeForm extends Form {
             ...this.inputs.region
             label='Region'
             variant='outlined'
-            options=regionOptions
+            options=regionOptions[this.inputs.provider.val()]
             select
           )
           MuiText(

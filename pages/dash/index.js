@@ -39,6 +39,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import lightGreen from '@material-ui/core/colors/lightGreen'
 import orange from '@material-ui/core/colors/orange'
 import red from '@material-ui/core/colors/red'
+import blue from '@material-ui/core/colors/blue'
 
 import BootNode from '../../src/bootnode/client'
 import Casper from '../../src/casper/client'
@@ -48,7 +49,7 @@ import { renderUIDate } from '../../src/util/date.js'
 import Emitter from '../../src/emitter'
 import capitalize from '../../src/string/capitalize'
 import { withStyles } from '@material-ui/core/styles'
-import { watch } from '../../src/referential/provider'
+import { watch } from 'react-referential'
 import { startLoading, stopLoading } from '../../components/app/loader'
 import classnames from 'classnames'
 
@@ -85,11 +86,14 @@ const REGIONS = {
   'us-central1': [-95.866667, 41.25],
   'europe-west6': [8.55, 47.366667],
   'asia-east2': [114.15769, 22.28552],
+  'test': [-94.5786, 39.0997],
 }
 
 const HEALTH_COLORS = {
+  // Staked: blue[500],
   Running: lightGreen[500],
   Pending: orange[500],
+  Deleting: red[500],
 }
 
 @watch('nodesPage')
@@ -123,6 +127,8 @@ class Index extends LoggedInPage {
   }
 
   async componentDidMount() {
+    super.componentDidMount()
+
     startLoading(' ')
 
     try {
@@ -189,7 +195,11 @@ class Index extends LoggedInPage {
       let row = data[k]
 
       if (!row.ip) {
-        row.instances[0].status = 'Pending'
+        if (row.instances[0]) {
+          row.instances[0].status = 'Pending'
+        } else {
+          row.instances = [{status: 'Pending'}]
+        }
       }
     }
 
@@ -253,13 +263,13 @@ class Index extends LoggedInPage {
     stopLoading(' ')
   }
 
-  deleteNode = ({id, zone}) => {
+  deleteNode = ({id, zone, provider}) => {
     return async () => {
       startLoading(' ')
       try {
         let api = new BootNode()
 
-        await api.request('DELETE', 'nodes/' + id, {zone})
+        await api.request('DELETE', 'nodes/' + id, {zone, provider})
         await this.loadTable()
       } catch (e) {
       }
@@ -374,15 +384,19 @@ class Index extends LoggedInPage {
     let points = this.getMapPoints()
     let healths = this.getHealths()
 
-    let hs = []
-
+    let running = 0
+    let total = 0
     for (let k in healths) {
       let health = healths[k]
 
-      hs.push(health.value + ' ' + health.label)
+      if (health.label == 'Running') {
+        running = health.value
+      }
+
+      total += health.value
     }
 
-    let healthStr = hs.join(', ')
+    let healthStr = '' +  running + '/' + total + ' Running'
 
     return pug`
       main#nodes.dash

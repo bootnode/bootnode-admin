@@ -2,7 +2,7 @@ import React from 'react'
 import App, { Container } from 'next/app'
 import Router from 'next/router'
 import { MuiPickersUtilsProvider } from 'material-ui-pickers'
-import RefProvider from '../src/referential/provider'
+import RefProvider from 'react-referential'
 import Header from '../components/layout/header'
 import Drawer from '../components/layout/drawer'
 import Footer from '../components/layout/footer'
@@ -50,7 +50,6 @@ export default class MyApp extends App {
 
   render () {
     const { Component, pageProps } = this.props
-
 
     return pug`
       Container

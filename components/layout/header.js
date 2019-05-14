@@ -13,17 +13,8 @@ import Router from 'next/router'
 
 import { fade } from '@material-ui/core/styles/colorManipulator'
 import { withStyles } from '@material-ui/core/styles'
-import { watch } from '../../src/referential/provider'
-// import {
-//   getOrg,
-//   setActiveOrg,
-//   getActiveOrg,
-//   getOrgs,
-//   logout,
-// } from '../../src/account'
-
-// import Api from '../../src/hanzo/api'
-// import { HANZO_KEY, HANZO_ENDPOINT } from '../../src/settings.js'
+import RefProvider, { watch } from 'react-referential'
+import BootNode from '../../src/bootnode/client'
 import * as qs from 'query-string'
 
 import isRequired from '../../src/control-middlewares/isRequired'
@@ -73,6 +64,10 @@ class Header extends Form {
     this.setState({
       anchorEl: null,
     })
+
+    let api = new BootNode()
+
+    api.logout()
 
     // logout()
     // let api = new Api( HANZO_KEY, HANZO_ENDPOINT )

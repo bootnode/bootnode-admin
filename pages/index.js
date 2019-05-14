@@ -1,29 +1,30 @@
 import React from 'react'
 import Router from 'next/router'
-import LoggedOutPage from '../components/pages/logged-out'
-import { watch } from '../src/referential/provider'
-// import LoginForm from '../components/forms/login'
+import { watch } from 'react-referential'
+import LoginForm from '../components/forms/login'
+import LoggedOutPage from '../components/pages/logged-in'
 import Emitter from '../src/emitter'
-// import { login } from '../src/account'
+import BootNode from '../src/bootnode/client'
 
-@watch('indexPage')
-class Index extends LoggedOutPage {
+import Card from '@material-ui/core/Card'
+import CardHeader from '@material-ui/core/CardHeader'
+import CardContent from '@material-ui/core/CardContent'
+import { startLoading, stopLoading } from '../components/app/loader'
+
+@watch('loginPage')
+class LoginPage extends LoggedOutPage {
   constructor(props) {
     super(props)
 
     this.emitter = new Emitter()
 
     this.emitter.on('login:success', res => {
-      // login(res)
-      this.login(res)
+      this.login()
     })
-
-    // login()
   }
 
-  login(res) {
-    console.log(res)
-
+  login() {
+    startLoading(' ')
     Router.push('/dash')
   }
 
@@ -33,17 +34,17 @@ class Index extends LoggedOutPage {
 
   render() {
     return pug`
-      main#index.hero.columns
-        .content.columns
-          .login.rows
-            h1 Login
-            br
-            // LoginForm(
-            //   data=this.props.data
-            //   emitter=this.emitter
-            // )
+      main#index
+        .login-form.content.columns
+          Card
+            CardContent
+              h2 Login
+              LoginForm(
+                data=this.props.data
+                emitter=this.emitter
+              )
     `
   }
 }
 
-export default Index
+export default LoginPage

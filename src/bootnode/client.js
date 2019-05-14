@@ -1,5 +1,6 @@
 import Xhr from 'es-xhr-promise'
-import { BOOTNODE_ENDPOINT, BOOTNODE_KEY } from '../settings'
+import { BOOTNODE_ENDPOINT } from '../settings'
+import akasha from '../mjs-fix/akasha'
 
 const updateParam = (url, key, value) => {
   let re = new RegExp('([?&])' + key + '=.*?(&|#|$)(.*)', 'gi')
@@ -44,12 +45,37 @@ const updateQuery = (url, data) => {
 }
 
 export default class BootNode {
-  constructor(endpoint=BOOTNODE_ENDPOINT, token=BOOTNODE_KEY) {
+  constructor(endpoint=BOOTNODE_ENDPOINT) {
     this.endpoint = endpoint
-    this.token = token
+    this.token = akasha.get('bootnode-token')
   }
 
-  request(method, route, data) {
+  isLoggedIn() {
+    return !!this.token
+  }
+
+  async login({email, password}) {
+    try {
+      let res = await this.request('post', 'login', {
+        email: email,
+        password: password
+      })
+
+      console.log('token', res.data.token)
+      akasha.set('bootnode-token', res.data.token)
+
+      return res.data.token
+    } catch(e) {
+      console.log('login error: ', e)
+    }
+  }
+
+  logout() {
+    this.token = undefined
+    akasha.set('bootnode-token', '')
+  }
+
+  async request(method, route, data) {
     method = method.toUpperCase()
 
     let opts = {
@@ -68,24 +94,26 @@ export default class BootNode {
       opts.data = JSON.stringify(data)
     }
 
-    return (new Xhr).send(opts)
-      .then((res) => {
-        console.log('response', res)
-        res.data = res.responseText
-        if (res.data.error) {
-          throw new Error(res.data.error)
-        }
-        return res
-      }).catch((res) => {
-        try {
-          res.data = res.responseText
-        } catch (err) {
-          console.log('response', res)
-          console.log('error', err)
+    try {
+      let res = await (new Xhr).send(opts)
 
-          throw err
-        }
-      })
+      console.log('response', res)
+
+      res.data = res.responseText
+      if (res.data.error) {
+        throw new Error(res.data.error)
+      }
+      return res
+    } catch(res) {
+      try {
+        res.data = res.responseText
+      } catch (err) {
+        console.log('response', res)
+        console.log('error', err)
+
+        throw err
+      }
+    }
   }
 }
 
