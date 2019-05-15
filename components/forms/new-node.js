@@ -14,19 +14,30 @@ import { watch } from 'react-referential'
 import isRequired from '../../src/control-middlewares/isRequired'
 
 let imageOptions = {
-  'casper-2': 'Casper 0.2'
+  'casper-3': 'Casper 0.3',
+  'casper-2': 'Casper 0.2',
+  'casper-1': 'Casper 0.1',
 }
 
 let providerOptions = {
   'private-cloud': 'Hanzo Private Cloud',
-  'google': 'Google'
+  'google': 'Google',
+  'amazon': 'Amazon',
+  'azure': 'Azure',
+  'digitalocean': 'Digital Ocean',
+  'linode': 'Linode',
+  'byo': 'BYO Cloud',
 }
 
 
 let regionOptions = {
   'private-cloud': {
     '': 'Select Region',
-    'test': 'Test',
+    'london': 'london',
+    'kansascity': 'kansascity',
+    'munich': 'munich',
+    'oslo': 'oslo',
+    'tokyo': 'tokyo',
   },
   'google': {
     '': 'Select Region',
@@ -49,9 +60,25 @@ let zoneOptions = {
     '': 'Select Zone',
     'asia-east2-a': 'asia-east2-a',
   },
-  'test': {
+  'london': {
     '': 'Select Zone',
-    'test': 'test',
+    'london1': 'london1',
+  },
+  'kansascity': {
+    '': 'Select Zone',
+    'kansascity1': 'kansascity1',
+  },
+  'munich': {
+    '': 'Select Zone',
+    'munich1': 'munich1',
+  },
+  'oslo': {
+    '': 'Select Zone',
+    'oslo1': 'oslo1',
+  },
+  'tokyo': {
+    '': 'Select Zone',
+    'tokyo1': 'tokyo1',
   },
 }
 

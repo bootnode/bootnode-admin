@@ -29,6 +29,8 @@ import Timer from '@material-ui/icons/Timer'
 import Settings from '@material-ui/icons/Settings'
 import Delete from '@material-ui/icons/Delete'
 import Timeline from '@material-ui/icons/Timeline'
+import Warning from '@material-ui/icons/Warning'
+import Autorenew from '@material-ui/icons/Autorenew'
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -65,6 +67,7 @@ const NODE_COLUMNS = (obj) => {
     new ColumnData('zone', Public),
     new ColumnData('ip', CloudDoneOutlined),
     new ColumnData('metadata.block.blockHash', DNS, x => x, 'too-long'),
+    new ColumnData('metadata.block.blockNumber', Autorenew, x => x || 0),
     new ColumnData('latencyMillis', Timer, (x) => {
       let ms = parseInt(x, 10)
       return isNaN(ms) ? 'n/a' : '' + ms + 'ms'
@@ -87,6 +90,11 @@ const REGIONS = {
   'europe-west6': [8.55, 47.366667],
   'asia-east2': [114.15769, 22.28552],
   'test': [-94.5786, 39.0997],
+  'london1': [0.1278, 51.5074],
+  'kansascity1': [-94.5786, 39.0997],
+  'munich1': [11.5820, 48.1351],
+  'oslo1': [10.7522, 59.9139],
+  'tokyo1': [139.6503, 35.6762],
 }
 
 const HEALTH_COLORS = {
@@ -203,6 +211,26 @@ class Index extends LoggedInPage {
       }
     }
 
+    data.sort((a,b) => {
+      let abn = a.metadata
+      if (abn) {
+        abn = parseInt(abn.block.blockNumber, 10)
+      }
+      if (!abn) {
+        abn = 0
+      }
+
+      let bbn = b.metadata
+      if (bbn) {
+        bbn = parseInt(bbn.block.blockNumber, 10)
+      }
+      if (!bbn) {
+        bbn = 0
+      }
+
+      return bbn - abn
+    })
+
     this.setState({
       rows: data,
       count: data.length,
@@ -259,6 +287,17 @@ class Index extends LoggedInPage {
       await this.loadTable()
     } catch (e) {
       console.log('error', e)
+    }
+    stopLoading(' ')
+  }
+
+  deleteNodes = async () => {
+    startLoading(' ')
+    try {
+      let api = new BootNode()
+
+      await api.request('DELETE', 'nodes')
+    } catch (e) {
     }
     stopLoading(' ')
   }
@@ -408,6 +447,13 @@ class Index extends LoggedInPage {
             Link(color='inherit' href='/' className=classes.breadcrumbLink)
               | CasperLabs - Testnet
             div(className=classes.flexGrow)
+            Button(
+              color='primary'
+              onClick=this.deleteNodes
+              size='small'
+            )
+              Warning
+              span(className=classes.launchText) Reset
             Button(
               color='primary'
               onClick=this.showNewNodeForm
