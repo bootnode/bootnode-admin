@@ -49,6 +49,7 @@
     "query-string": "6.2.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "react-flip-move": "3.0.3",
     "react-load-script": "0.0.6",
     "react-number-format": "4.0.6",
     "react-referential": "1.0.2",

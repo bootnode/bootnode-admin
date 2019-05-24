@@ -219,6 +219,7 @@ class Index extends LoggedInPage {
       if (!abn) {
         abn = 0
       }
+      abn -= a.latencyMillis / 10000
 
       let bbn = b.metadata
       if (bbn) {
@@ -227,6 +228,7 @@ class Index extends LoggedInPage {
       if (!bbn) {
         bbn = 0
       }
+      bbn -= b.latencyMillis / 10000
 
       return bbn - abn
     })
